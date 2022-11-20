@@ -17,3 +17,7 @@ class Tests(unittest.TestCase):
             app, ["login", username], input=f"{password}\n{password}\n"
         )
         self.assertEqual(result.exit_code, 0)
+
+    def test_profile_prefs(self):
+        result = runner.invoke(app, ["profile-prefs"])
+        self.assertEqual(result.exit_code, 0)
