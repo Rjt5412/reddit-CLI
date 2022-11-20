@@ -1,13 +1,17 @@
 import typer
 from rich import print
+from rich.table import Table
+from rich.console import Console
 from .login import (
     get_creds_config,
     get_auth_access_token,
     retrieve_auth_token,
     save_access_token,
 )
+from .profile import get_profile_prefs, update_prefs
 
 app = typer.Typer()
+console = Console()
 
 
 @app.callback()
@@ -39,5 +43,24 @@ def login(
             typer.echo("Auth token generated. User logged in!")
 
 
-if __name__ == "__main__":
-    app()
+@app.command()
+def profile_prefs():
+    # Get token if it exists
+    auth_token = retrieve_auth_token()
+    if auth_token is None:
+        print("[red]User not logged in.[/red].")
+        raise typer.Abort()
+    subreddit_dict = get_profile_prefs(auth_token)
+
+    # Print the prefs as a pretty table
+    table = Table("Preference", "Value")
+    for key, value in subreddit_dict.items():
+        table.add_row(str(key), str(value))
+
+    console.print(table)
+
+
+@app.command()
+def update_profile_prefs():
+    typer.echo("Redirecting to reddit preferences page on web browser.")
+    update_prefs()
