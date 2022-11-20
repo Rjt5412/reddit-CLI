@@ -1,28 +1,43 @@
 import typer
-from login import get_config_json, get_auth_access_token
-
+from rich import print
+from .login import (
+    get_creds_config,
+    get_auth_access_token,
+    retrieve_auth_token,
+    save_access_token,
+)
 
 app = typer.Typer()
 
 
-@app.callback
+@app.callback()
 def callback():
-    pass
+    """
+    Reddit CLI
+    """
 
 
-@app.command
+@app.command()
 def login(
     username: str,
     password: str = typer.Option(
         ..., prompt=True, confirmation_prompt=True, hide_input=True
     ),
 ):
-    # TODO: Prompt and return if auth token already exists and not expired
+    if retrieve_auth_token() is not None:
+        print("[green]User already logged in[/green] :thumbsup:")
+    else:
+        config = get_creds_config()
+        if not config:
+            typer.echo(
+                "Config JSON with credentials not found. Refer documentation to create this file before login"
+            )
+            raise typer.Abort()
+        else:
+            auth_dict = get_auth_access_token(config, username, password)
+            save_access_token(auth_dict)
+            typer.echo("Auth token generated. User logged in!")
 
-    # TODO:
-    # 2. Send the request for auth access token
-    # 3. Generate the expiration timestamp and add it to token json to be stored
-    # 4. Store the access token locally under $HOME/.reddit-config
 
-    config = get_config_json()
-    auth_token = get_auth_access_token(config, username, password)
+if __name__ == "__main__":
+    app()
