@@ -8,7 +8,7 @@ from .login import (
     retrieve_auth_token,
     save_access_token,
 )
-from .profile import get_profile_prefs
+from .profile import get_profile_prefs, update_prefs
 
 app = typer.Typer()
 console = Console()
@@ -58,3 +58,9 @@ def profile_prefs():
         table.add_row(str(key), str(value))
 
     console.print(table)
+
+
+@app.command()
+def update_profile_prefs():
+    typer.echo("Redirecting to reddit preferences page on web browser.")
+    update_prefs()
