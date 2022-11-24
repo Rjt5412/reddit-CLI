@@ -5,7 +5,7 @@ from rich.console import Console
 from .login import (
     get_creds_config,
     get_auth_access_token,
-    retrieve_auth_token,
+    retrieve_auth_creds,
     save_access_token,
 )
 from .profile import get_profile_prefs, update_prefs
@@ -28,7 +28,8 @@ def login(
         ..., prompt=True, confirmation_prompt=True, hide_input=True
     ),
 ):
-    if retrieve_auth_token() is not None:
+    auth_token, _ = retrieve_auth_creds()
+    if auth_token is not None:
         print("[green]User already logged in[/green] :thumbsup:")
     else:
         config = get_creds_config()
@@ -39,18 +40,18 @@ def login(
             raise typer.Abort()
         else:
             auth_dict = get_auth_access_token(config, username, password)
-            save_access_token(auth_dict)
+            save_access_token(auth_dict, username)
             typer.echo("Auth token generated. User logged in!")
 
 
 @app.command()
 def profile_prefs():
     # Get token if it exists
-    auth_token = retrieve_auth_token()
-    if auth_token is None:
+    auth_token, user_agent = retrieve_auth_creds()
+    if auth_token is None or user_agent is None:
         print("[red]User not logged in.[/red].")
         raise typer.Abort()
-    subreddit_dict = get_profile_prefs(auth_token)
+    subreddit_dict = get_profile_prefs(auth_token, user_agent)
 
     # Print the prefs as a pretty table
     table = Table("Preference", "Value")

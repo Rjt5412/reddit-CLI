@@ -1,12 +1,12 @@
 from typing import Dict
-from .utils import get_api_response_post
+from .utils import get_api_response
 import webbrowser
 
 
-def get_profile_prefs(auth_token: str) -> Dict:
+def get_profile_prefs(auth_token: str, user_agent: str) -> Dict:
     url = "https://oauth.reddit.com/api/v1/me/prefs"
-    headers = {"Authorization": f"bearer {auth_token}"}
-    prefs_dict = get_api_response_post(url=url, headers=headers)
+    headers = {"Authorization": f"bearer {auth_token}", "User-Agent": user_agent}
+    prefs_dict = get_api_response(url=url, headers=headers)
     return prefs_dict
 
 

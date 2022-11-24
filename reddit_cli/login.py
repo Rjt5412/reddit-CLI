@@ -57,7 +57,7 @@ def get_auth_access_token(config: Dict, username: str, password: str) -> Dict:
     return response.json()
 
 
-def save_access_token(auth_dict: Dict):
+def save_access_token(auth_dict: Dict, username: str):
     """
     Add an expiration timestamp to the auth token and save it locally to ${HOME}/reddit_auth.json
     """
@@ -68,19 +68,21 @@ def save_access_token(auth_dict: Dict):
         datetime.now() + timedelta(seconds=(int(auth_dict["expires_in"]) - 200))
     ).strftime("%m/%d/%Y, %H:%M:%S")
     auth_dict["expiration_timestamp"] = expiration_timestamp
+    auth_dict["User-Agent"] = f"reddit-cli/0.1 by {username}"
 
     # Save Dict as JSON
     with open(f"{HOME_DIR}/reddit_auth.json", "w") as f:
         json.dump(auth_dict, f)
 
 
-def retrieve_auth_token() -> str:
+def retrieve_auth_creds() -> str:
     """
-    A function to retrieve the auth acess token if it already exists locally(as JSON)
+    A function to retrieve the auth acess token and user agent if it already exists locally(as JSON)
     under ${HOME}/reddit_auth.json and is not expired
     Returns: Access token string if present else None
     """
     access_token = None
+    user_agent = None
 
     # Read the acess token info from file
     if path.exists(f"{HOME_DIR}/reddit_auth.json"):
@@ -98,5 +100,5 @@ def retrieve_auth_token() -> str:
             )
             if now < expiration_timestamp:
                 access_token = auth_dict["access_token"]
-
-    return access_token
+                user_agent = auth_dict["User-Agent"]
+    return access_token, user_agent
