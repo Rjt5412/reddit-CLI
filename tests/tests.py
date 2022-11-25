@@ -21,3 +21,7 @@ class Tests(unittest.TestCase):
     def test_profile_prefs(self):
         result = runner.invoke(app, ["profile-prefs"])
         self.assertEqual(result.exit_code, 0)
+
+    def test_subreddit_subscribed(self):
+        result = runner.invoke(app, ["subreddit-subscribed"])
+        self.assertEqual(result.exit_code, 0)

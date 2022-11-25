@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 import requests
 
 
@@ -13,3 +13,15 @@ def get_api_response(url: str, headers: Dict, payload: Dict = None) -> Dict:
         raise Exception(e)
 
     return response.json()
+
+
+def prune_subscribed_response(response: Dict) -> List:
+    subreddits = list()
+    for item in response["data"]["children"]:
+        subreddit = dict()
+        subreddit["name"] = item["data"]["display_name_prefixed"]
+        subreddit["desc"] = item["data"]["public_description"]
+        subreddit["subscribers"] = item["data"]["subscribers"]
+        subreddits.append(subreddit)
+
+    return subreddits
