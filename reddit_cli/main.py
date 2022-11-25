@@ -13,6 +13,7 @@ from .subreddit import (
     get_subscribed_subreddits,
     get_new_subreddits,
     get_popular_subreddits,
+    get_subreddits_searched,
 )
 
 app = typer.Typer()
@@ -95,13 +96,14 @@ def subreddit_subscribed():
 
 
 @app.command()
-def subreddit_new():
+def subreddit_search():
     # Get token if it exists
     auth_token, user_agent = retrieve_auth_creds()
     if auth_token is None or user_agent is None:
         print("[red]User not logged in.[/red].")
         raise typer.Abort()
     subreddits = get_new_subreddits(auth_token, user_agent)
+
     table = Table("Subreddit name", "Subscribers", "Decription")
     for subreddit in subreddits:
         table.add_row(
@@ -136,3 +138,28 @@ def subreddit_popular():
         table.add_row("\n", "\n", "\n")
 
     console.print(table)
+
+
+@app.command()
+def subreddit_search(search_query: str):
+    auth_token, user_agent = retrieve_auth_creds()
+    if auth_token is None or user_agent is None:
+        print("[red]User not logged in.[/red].")
+        raise typer.Abort()
+    subreddits = get_subreddits_searched(auth_token, user_agent, search_query)
+
+    if len(subreddits) > 0:
+        table = Table("Subreddit name", "Subscribers", "Decription")
+        for subreddit in subreddits:
+            table.add_row(
+                str(subreddit["name"]),
+                str(subreddit["subscribers"]),
+                str(subreddit["desc"].strip("\n")),
+            )
+            table.add_row("\n", "\n", "\n")
+            table.add_row("=" * 15, "=" * 15, "=" * 15)
+            table.add_row("\n", "\n", "\n")
+
+        console.print(table)
+    else:
+        print(f"[red]No subreddits found for query {search_query}[/red].")
