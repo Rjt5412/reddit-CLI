@@ -25,3 +25,11 @@ class Tests(unittest.TestCase):
     def test_subreddit_subscribed(self):
         result = runner.invoke(app, ["subreddit-subscribed"])
         self.assertEqual(result.exit_code, 0)
+
+    def test_subreddit_new(self):
+        result = runner.invoke(app, ["subreddit-new"])
+        self.assertEqual(result.exit_code, 0)
+
+    def test_subreddit_popular(self):
+        result = runner.invoke(app, ["subreddit-popular"])
+        self.assertEqual(result.exit_code, 0)

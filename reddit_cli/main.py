@@ -9,7 +9,11 @@ from .login import (
     save_access_token,
 )
 from .profile import get_profile_prefs, update_prefs
-from .subreddit import get_subscribed_subreddits
+from .subreddit import (
+    get_subscribed_subreddits,
+    get_new_subreddits,
+    get_popular_subreddits,
+)
 
 app = typer.Typer()
 console = Console()
@@ -76,6 +80,50 @@ def subreddit_subscribed():
         print("[red]User not logged in.[/red].")
         raise typer.Abort()
     subreddits = get_subscribed_subreddits(auth_token, user_agent)
+    table = Table("Subreddit name", "Subscribers", "Decription")
+    for subreddit in subreddits:
+        table.add_row(
+            str(subreddit["name"]),
+            str(subreddit["subscribers"]),
+            str(subreddit["desc"].strip("\n")),
+        )
+        table.add_row("\n", "\n", "\n")
+        table.add_row("=" * 15, "=" * 15, "=" * 15)
+        table.add_row("\n", "\n", "\n")
+
+    console.print(table)
+
+
+@app.command()
+def subreddit_new():
+    # Get token if it exists
+    auth_token, user_agent = retrieve_auth_creds()
+    if auth_token is None or user_agent is None:
+        print("[red]User not logged in.[/red].")
+        raise typer.Abort()
+    subreddits = get_new_subreddits(auth_token, user_agent)
+    table = Table("Subreddit name", "Subscribers", "Decription")
+    for subreddit in subreddits:
+        table.add_row(
+            str(subreddit["name"]),
+            str(subreddit["subscribers"]),
+            str(subreddit["desc"].strip("\n")),
+        )
+        table.add_row("\n", "\n", "\n")
+        table.add_row("=" * 15, "=" * 15, "=" * 15)
+        table.add_row("\n", "\n", "\n")
+
+    console.print(table)
+
+
+@app.command()
+def subreddit_popular():
+    # Get token if it exists
+    auth_token, user_agent = retrieve_auth_creds()
+    if auth_token is None or user_agent is None:
+        print("[red]User not logged in.[/red].")
+        raise typer.Abort()
+    subreddits = get_popular_subreddits(auth_token, user_agent)
     table = Table("Subreddit name", "Subscribers", "Decription")
     for subreddit in subreddits:
         table.add_row(

@@ -15,7 +15,7 @@ def get_api_response(url: str, headers: Dict, payload: Dict = None) -> Dict:
     return response.json()
 
 
-def prune_subscribed_response(response: Dict) -> List:
+def prune_subreddit_listing(response: Dict) -> List:
     subreddits = list()
     for item in response["data"]["children"]:
         subreddit = dict()
