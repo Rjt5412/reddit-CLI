@@ -46,7 +46,7 @@ def get_subreddits_searched(auth_token: str, user_agent: str, search_str: str) -
     return searched_subreddits
 
 
-@app.command()
+@app.command(help="Display list of user subscribed subreddits")
 def subscribed():
     # Get token if it exists
     auth_token, user_agent = retrieve_auth_creds()
@@ -68,7 +68,7 @@ def subscribed():
     console.print(table)
 
 
-@app.command()
+@app.command(help="Display list of top recently created subreddits")
 def new():
     # Get token if it exists
     auth_token, user_agent = retrieve_auth_creds()
@@ -91,7 +91,7 @@ def new():
     console.print(table)
 
 
-@app.command()
+@app.command(help="Display list of popular subreddits")
 def popular():
     # Get token if it exists
     auth_token, user_agent = retrieve_auth_creds()
@@ -113,7 +113,7 @@ def popular():
     console.print(table)
 
 
-@app.command()
+@app.command(help="Display list of subreddits based on search query")
 def search(search_query: str):
     auth_token, user_agent = retrieve_auth_creds()
     if auth_token is None or user_agent is None:

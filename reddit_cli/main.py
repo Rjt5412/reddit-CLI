@@ -35,6 +35,9 @@ def login(
         ..., prompt=True, confirmation_prompt=True, hide_input=True
     ),
 ):
+    """
+    Login in username and password. User might need to login again if user token is expired.
+    """
     auth_token, _ = retrieve_auth_creds()
     if auth_token is not None:
         print("[green]User already logged in[/green] :thumbsup:")

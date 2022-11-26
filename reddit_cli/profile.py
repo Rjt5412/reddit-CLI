@@ -22,7 +22,7 @@ def update_prefs():
 
 
 @app.command()
-def prefs():
+def prefs(help="Display user profile preferences"):
     # Get token if it exists
     auth_token, user_agent = retrieve_auth_creds()
     if auth_token is None or user_agent is None:
@@ -38,7 +38,9 @@ def prefs():
     console.print(table)
 
 
-@app.command()
+@app.command(
+    help="Update user profile preferences. User would be redirected to profile preferences page on web browser."
+)
 def update_prefs():
     typer.echo("Redirecting to reddit preferences page on web browser.")
     update_prefs()
