@@ -1,6 +1,5 @@
 import typer
 from rich import print
-from rich.table import Table
 from rich.console import Console
 from .login import (
     get_creds_config,
@@ -8,22 +7,24 @@ from .login import (
     retrieve_auth_creds,
     save_access_token,
 )
-from .profile import get_profile_prefs, update_prefs
-from .subreddit import (
-    get_subscribed_subreddits,
-    get_new_subreddits,
-    get_popular_subreddits,
-    get_subreddits_searched,
-)
+from .profile import app as profile_app
+from .subreddit import app as subreddit_app
+
+console = Console()
 
 app = typer.Typer()
-console = Console()
+app.add_typer(profile_app, name="profile", help="Access user profile options")
+app.add_typer(
+    subreddit_app,
+    name="subreddit",
+    help="List and search for subreddits based on specific criterion",
+)
 
 
 @app.callback()
 def callback():
     """
-    Reddit CLI
+    REDDIT CLI
     """
 
 
@@ -48,118 +49,3 @@ def login(
             auth_dict = get_auth_access_token(config, username, password)
             save_access_token(auth_dict, username)
             typer.echo("Auth token generated. User logged in!")
-
-
-@app.command()
-def profile_prefs():
-    # Get token if it exists
-    auth_token, user_agent = retrieve_auth_creds()
-    if auth_token is None or user_agent is None:
-        print("[red]User not logged in.[/red].")
-        raise typer.Abort()
-    subreddit_dict = get_profile_prefs(auth_token, user_agent)
-
-    # Print the prefs as a pretty table
-    table = Table("Preference", "Value")
-    for key, value in subreddit_dict.items():
-        table.add_row(str(key), str(value))
-
-    console.print(table)
-
-
-@app.command()
-def update_profile_prefs():
-    typer.echo("Redirecting to reddit preferences page on web browser.")
-    update_prefs()
-
-
-@app.command()
-def subreddit_subscribed():
-    # Get token if it exists
-    auth_token, user_agent = retrieve_auth_creds()
-    if auth_token is None or user_agent is None:
-        print("[red]User not logged in.[/red].")
-        raise typer.Abort()
-    subreddits = get_subscribed_subreddits(auth_token, user_agent)
-    table = Table("Subreddit name", "Subscribers", "Decription")
-    for subreddit in subreddits:
-        table.add_row(
-            str(subreddit["name"]),
-            str(subreddit["subscribers"]),
-            str(subreddit["desc"].strip("\n")),
-        )
-        table.add_row("\n", "\n", "\n")
-        table.add_row("=" * 15, "=" * 15, "=" * 15)
-        table.add_row("\n", "\n", "\n")
-
-    console.print(table)
-
-
-@app.command()
-def subreddit_search():
-    # Get token if it exists
-    auth_token, user_agent = retrieve_auth_creds()
-    if auth_token is None or user_agent is None:
-        print("[red]User not logged in.[/red].")
-        raise typer.Abort()
-    subreddits = get_new_subreddits(auth_token, user_agent)
-
-    table = Table("Subreddit name", "Subscribers", "Decription")
-    for subreddit in subreddits:
-        table.add_row(
-            str(subreddit["name"]),
-            str(subreddit["subscribers"]),
-            str(subreddit["desc"].strip("\n")),
-        )
-        table.add_row("\n", "\n", "\n")
-        table.add_row("=" * 15, "=" * 15, "=" * 15)
-        table.add_row("\n", "\n", "\n")
-
-    console.print(table)
-
-
-@app.command()
-def subreddit_popular():
-    # Get token if it exists
-    auth_token, user_agent = retrieve_auth_creds()
-    if auth_token is None or user_agent is None:
-        print("[red]User not logged in.[/red].")
-        raise typer.Abort()
-    subreddits = get_popular_subreddits(auth_token, user_agent)
-    table = Table("Subreddit name", "Subscribers", "Decription")
-    for subreddit in subreddits:
-        table.add_row(
-            str(subreddit["name"]),
-            str(subreddit["subscribers"]),
-            str(subreddit["desc"].strip("\n")),
-        )
-        table.add_row("\n", "\n", "\n")
-        table.add_row("=" * 15, "=" * 15, "=" * 15)
-        table.add_row("\n", "\n", "\n")
-
-    console.print(table)
-
-
-@app.command()
-def subreddit_search(search_query: str):
-    auth_token, user_agent = retrieve_auth_creds()
-    if auth_token is None or user_agent is None:
-        print("[red]User not logged in.[/red].")
-        raise typer.Abort()
-    subreddits = get_subreddits_searched(auth_token, user_agent, search_query)
-
-    if len(subreddits) > 0:
-        table = Table("Subreddit name", "Subscribers", "Decription")
-        for subreddit in subreddits:
-            table.add_row(
-                str(subreddit["name"]),
-                str(subreddit["subscribers"]),
-                str(subreddit["desc"].strip("\n")),
-            )
-            table.add_row("\n", "\n", "\n")
-            table.add_row("=" * 15, "=" * 15, "=" * 15)
-            table.add_row("\n", "\n", "\n")
-
-        console.print(table)
-    else:
-        print(f"[red]No subreddits found for query {search_query}[/red].")
