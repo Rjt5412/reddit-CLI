@@ -25,3 +25,32 @@ def prune_subreddit_listing(response: Dict) -> List:
         subreddits.append(subreddit)
 
     return subreddits
+
+
+def prune_post_listing(response: Dict) -> List:
+    posts = list()
+    for item in response["data"]["children"]:
+        post = dict()
+        post["title"] = item["data"]["title"].strip("\n")
+        post["text"] = item["data"]["selftext"].strip("\n")
+        post["awards"] = item["data"]["total_awards_received"]
+        post["upvotes"] = item["data"]["ups"]
+        post["downvotes"] = item["data"]["downs"]
+        post["comments"] = item["data"]["num_comments"]
+        post["url"] = f"https://reddit.com{item['data']['permalink']}"
+
+        # Check for media links
+        media_url = ""
+        if item["data"].get("preview"):
+            if item["data"]["preview"].get("images"):
+                if len(item["data"]["preview"]["images"]) > 0:
+                    if item["data"]["preview"]["images"][0].get("source"):
+                        if item["data"]["preview"]["images"][0]["source"].get("url"):
+                            media_url = item["data"]["preview"]["images"][0]["source"][
+                                "url"
+                            ]
+        post["media_url"] = media_url
+
+        posts.append(post)
+
+    return posts
