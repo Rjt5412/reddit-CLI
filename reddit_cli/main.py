@@ -9,6 +9,7 @@ from .login import (
 )
 from .profile import app as profile_app
 from .subreddit import app as subreddit_app
+from .post import app as post_app
 
 console = Console()
 
@@ -18,6 +19,11 @@ app.add_typer(
     subreddit_app,
     name="subreddit",
     help="List and search for subreddits based on specific criterion",
+)
+app.add_typer(
+    post_app,
+    name="post",
+    help="Display posts from subreddits based on specific criterion",
 )
 
 

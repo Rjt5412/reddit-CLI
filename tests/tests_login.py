@@ -9,7 +9,7 @@ HOME_DIR = os.getenv("HOME")
 runner = CliRunner()
 
 
-class Tests(unittest.TestCase):
+class TestsLogin(unittest.TestCase):
     def test_login(self):
         username = "abcd"
         password = "pass1234"
