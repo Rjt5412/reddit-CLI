@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "reddit-cli"
+version = "0.1.0"
+description = ""
+authors = ["Rajat"]
+readme = "README.md"
+packages = [{include = "reddit_cli"}]
+repository = "https://github.com/Rjt5412/reddit-cli.git"
+
+
+[tool.poetry.dependencies]
+python = "^3.10"
+typer = {extras = ["all"], version = "^0.7.0"}
+
+[tool.poetry.scripts]
+reddit-cli = "reddit_cli.main:app"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
